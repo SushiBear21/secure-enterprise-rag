@@ -80,3 +80,17 @@ from reading documents, and where should document authorization occur?
 - Reused the existing KMS key for the sandbox.
 - No knowledge base or ingestion job exists yet.
 - Next: create Bedrock service role, knowledge base, and S3 data source.
+
+## Session 3 retrieval results — 2026-10-27
+- Deployed Bedrock role, knowledge base, and S3 data source.
+- Restricted role trust to knowledge base CIDAASDHVV.
+- Initial ingestion indexed 3 documents with 0 failures.
+- Verified relevant source passages and metadata for all three audiences.
+- Employee-filtered SOC query excluded the restricted runbook.
+- Corrected incomplete runbook text; re-ingested 1 modified document
+  with 0 failures and verified the corrected closure requirements.
+- Aligned travel evaluation wording with the actual source.
+- Recorded ambiguous vendor-access expiration wording in the reference test.
+- These were manual retrieval checks, not automated answer evaluations.
+- End-user authorization remains pending.
+- Next: Session 4, Python RAG application and cited answer generation.

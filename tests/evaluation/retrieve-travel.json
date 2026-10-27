@@ -1,0 +1,17 @@
+{
+  "knowledgeBaseId": "CIDAASDHVV",
+  "retrievalQuery": {
+    "text": "Who must approve business travel?"
+  },
+  "retrievalConfiguration": {
+    "vectorSearchConfiguration": {
+      "numberOfResults": 3,
+      "filter": {
+        "equals": {
+          "key": "audience",
+          "value": "all_employees"
+        }
+      }
+    }
+  }
+}

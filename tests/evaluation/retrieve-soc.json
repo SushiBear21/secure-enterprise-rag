@@ -1,0 +1,17 @@
+{
+  "knowledgeBaseId": "CIDAASDHVV",
+  "retrievalQuery": {
+    "text": "Who approves incident closure and what documentation is required?"
+  },
+  "retrievalConfiguration": {
+    "vectorSearchConfiguration": {
+      "numberOfResults": 3,
+      "filter": {
+        "equals": {
+          "key": "audience",
+          "value": "soc_analysts"
+        }
+      }
+    }
+  }
+}

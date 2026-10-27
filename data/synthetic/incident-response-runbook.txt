@@ -29,6 +29,8 @@ Escalation
 Notify the SOC manager within 15 minutes of confirming
 a high-severity incident.
 
-Incident Closure
-Incident Manager Approves Closure
-Documentation from Initial Triage 
+Incident closure
+The Incident Manager must approve incident closure.
+Documentation from every incident response phase must be
+submitted to the approved incident evidence repository
+before the incident can be closed.

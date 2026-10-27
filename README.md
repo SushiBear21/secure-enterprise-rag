@@ -1,22 +1,26 @@
 ﻿# Secure Enterprise RAG Assistant
 
-An AWS/Bedrock portfolio project using only synthetic, unclassified data.
+AWS Bedrock portfolio project using synthetic, unclassified data.
 
-## Current implementation
-- Dedicated AWS sandbox account and Identity Center CLI authentication.
-- Monthly budget alert.
-- Terraform-managed S3 document storage.
-- Customer-managed KMS encryption with key rotation.
-- S3 Block Public Access, disabled ACLs, and versioning.
-- Bucket policy denying insecure transport for non-service principals.
+## Implemented
+- Dedicated sandbox, Identity Center access, and budget alert.
+- Terraform-managed KMS-encrypted document bucket and S3 vector index.
+- Scoped Bedrock service role and knowledge-base-specific trust policy.
+- Titan Text Embeddings V2 with 1024-dimensional vectors.
+- Fixed-size chunking: 300 tokens, 20 percent overlap.
+- Three synthetic documents with audience metadata.
+- Knowledge base and S3 data-source connection.
 
-## Verification
-Live settings checked, a synthetic upload confirmed SSE-KMS encryption
-with the expected key, and Terraform reported no configuration drift.
-TLS policy inspected; an HTTP denial test remains pending.
+## Verified
+- Initial ingestion: 3 documents indexed, 0 failures.
+- Updated runbook: 1 modified document indexed, 0 failures.
+- Retrieved relevant evidence for employee, SOC, and acquisition queries.
+- Employee metadata filter excluded the SOC runbook in a targeted test.
 
-## Next milestone
-Document ingestion, metadata, and retrieval design.
-Bedrock, application authorization, and AI defenses are not implemented yet.
+## Limits
+CLI tests use administrator access and manually supplied filters.
+End-user authorization, generated answers, guardrails, and automated
+evaluation are not implemented. Similarity scores are not confidence
+probabilities. The vendor-access source has an ambiguous one-year start date.
 
-See docs/foundation.md for architecture, decisions, and remaining work.
+See docs/foundation.md for progress and security decisions.
