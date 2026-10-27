@@ -2,7 +2,7 @@ resource "aws_lambda_function" "api" {
   function_name = "secure-rag-api"
   role          = aws_iam_role.api.arn
   runtime       = "python3.13"
-  handler       = "api_handler.lambda_handler"
+  handler       = "monitored_handler.lambda_handler"
 
   filename         = "${path.module}/../../.build/api.zip"
   source_code_hash = filebase64sha256("${path.module}/../../.build/api.zip")
@@ -59,6 +59,20 @@ resource "aws_apigatewayv2_stage" "default" {
   default_route_settings {
     throttling_burst_limit = 5
     throttling_rate_limit  = 2
+  }
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_access.arn
+
+    format = jsonencode({
+      request_id          = "$context.requestId"
+      request_time        = "$context.requestTime"
+      route               = "$context.routeKey"
+      http_method         = "$context.httpMethod"
+      status              = "$context.status"
+      response_latency_ms = "$context.responseLatency"
+      integration_status  = "$context.integration.integrationStatus"
+    })
   }
 }
 
