@@ -60,3 +60,13 @@ from reading documents, and where should document authorization occur?
 - Metadata labels do not enforce access; authorization is still pending.
 - Documents remain local; S3 upload and Bedrock ingestion are pending.
 - Next: define evaluation questions, explain chunking, and upload documents.
+
+## Session 2 — document preparation and upload
+- Created three synthetic documents with audience metadata.
+- Local checks passed for file presence, JSON syntax, IDs, and audiences.
+- Defined five evaluation cases; AI evaluation has not run yet.
+- Discussed chunk-size tradeoffs; chunking is not configured yet.
+- Uploaded all six document/metadata files to documents/synthetic/.
+- Confirmed the uploaded files through an S3 listing.
+- Bedrock ingestion, retrieval, and document authorization remain pending.
+- Decision: keep evaluation answers outside the ingestion corpus.
