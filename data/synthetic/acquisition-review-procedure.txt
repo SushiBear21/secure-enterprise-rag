@@ -1,0 +1,33 @@
+SYNTHETIC TRAINING DATA — NOT AN ACTUAL ORGANIZATION PROCEDURE
+
+Title: Harbor Research Acquisition Review Procedure
+Document ID: HR-ACQ-001
+Version: 1.0
+Effective date: 2026-10-01
+Owner: Acquisition Management
+Audience: Acquisition team
+
+Purpose
+Define review requirements for proposed technology purchases.
+
+Required submission
+The requester must provide a business justification,
+estimated total cost, and proposed technical acceptance criteria.
+
+Security review
+Enterprise Security must review purchases that process
+organizational data or connect to internal systems.
+The review must occur before purchase approval.
+
+Approval
+The Acquisition Manager must approve purchases.
+Requester approval alone is insufficient.
+
+Acceptance
+The technical owner must document whether the delivered
+product meets the approved technical acceptance criteria.
+Unresolved deficiencies must be recorded before acceptance.
+
+Vendor Access
+CIO Approves vendor access
+Vendor Access expires at the end of the designated contract perior or one year whichever is sooner.

@@ -52,3 +52,11 @@ No application, model, or retrieval service is deployed yet.
 ## Interview question
 Why does KMS encryption not prevent a broadly authorized role
 from reading documents, and where should document authorization occur?
+
+## Session 2 progress — 2026-10-27
+- Created three synthetic Harbor Research documents and metadata files.
+- Defined audiences: all_employees, soc_analysts, acquisition_team.
+- Checked file presence, JSON syntax, and document ID/audience fields.
+- Metadata labels do not enforce access; authorization is still pending.
+- Documents remain local; S3 upload and Bedrock ingestion are pending.
+- Next: define evaluation questions, explain chunking, and upload documents.

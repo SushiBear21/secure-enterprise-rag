@@ -1,0 +1,33 @@
+SYNTHETIC TRAINING DATA — NOT AN ACTUAL ORGANIZATION POLICY
+
+Title: Harbor Research Remote Access Policy
+Document ID: HR-POL-001
+Version: 1.0
+Effective date: 2026-10-01
+Owner: Enterprise Security
+Audience: All employees
+
+Purpose
+Define requirements for remote access to Harbor Research systems.
+
+Access requirements
+Employees must use an organization-managed device.
+Multifactor authentication is required for remote access.
+Access must use the approved enterprise remote access service.
+Personal devices are not permitted to access internal systems.
+
+Session requirements
+Remote sessions must lock after 15 minutes of inactivity.
+Users must reconnect and authenticate after a session expires.
+
+Exceptions
+Enterprise Security must approve exceptions before access begins.
+Exceptions expire after 30 days unless explicitly renewed.
+
+Reporting
+Employees must report a lost managed device to the service desk
+within one hour of discovering the loss.
+
+Travel Requirements
+Must get approval from supervisor to travel with equipment
+Employees must use approved provided VPN 

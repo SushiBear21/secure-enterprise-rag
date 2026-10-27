@@ -1,0 +1,32 @@
+{
+  "metadataAttributes": {
+    "document_id": {
+      "value": {
+        "type": "STRING",
+        "stringValue": "HR-SOC-001"
+      },
+      "includeForEmbedding": false
+    },
+    "version": {
+      "value": {
+        "type": "STRING",
+        "stringValue": "1.0"
+      },
+      "includeForEmbedding": false
+    },
+    "owner": {
+      "value": {
+        "type": "STRING",
+        "stringValue": "Security Operations"
+      },
+      "includeForEmbedding": true
+    },
+    "audience": {
+      "value": {
+        "type": "STRING",
+        "stringValue": "soc_analysts"
+      },
+      "includeForEmbedding": false
+    }
+  }
+}

@@ -1,0 +1,34 @@
+SYNTHETIC TRAINING DATA — NOT AN ACTUAL ORGANIZATION RUNBOOK
+
+Title: Harbor Research Incident Response Runbook
+Document ID: HR-SOC-001
+Version: 1.0
+Effective date: 2026-10-01
+Owner: Security Operations
+Audience: SOC analysts
+
+Purpose
+Define initial handling of suspected endpoint compromise.
+
+Initial triage
+Create an incident record and assign an incident owner.
+Record the affected device identifier and detection time.
+Review endpoint alerts and available authentication logs.
+
+Containment
+The SOC incident lead must approve endpoint isolation.
+Record the approval in the incident record before isolation.
+If the incident lead is unavailable, escalate to the SOC manager.
+
+Evidence handling
+Store collected evidence in the approved incident evidence repository.
+Record who collected each item and the collection time.
+Do not upload evidence to personal accounts or public AI services.
+
+Escalation
+Notify the SOC manager within 15 minutes of confirming
+a high-severity incident.
+
+Incident Closure
+Incident Manager Approves Closure
+Documentation from Initial Triage 
