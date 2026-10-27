@@ -70,3 +70,13 @@ from reading documents, and where should document authorization occur?
 - Confirmed the uploaded files through an S3 listing.
 - Bedrock ingestion, retrieval, and document authorization remain pending.
 - Decision: keep evaluation answers outside the ingestion corpus.
+
+## Session 3 checkpoint — 2026-10-27
+- Created a KMS-encrypted S3 vector bucket and enterprise-documents index.
+- Verified live settings: float32, 1024 dimensions, cosine similarity.
+- Verified the expected KMS key and non-filterable Bedrock metadata fields.
+- Resolved indexing AccessDenied by granting the indexing service
+  kms:Decrypt with account, bucket/subresource, and context conditions.
+- Reused the existing KMS key for the sandbox.
+- No knowledge base or ingestion job exists yet.
+- Next: create Bedrock service role, knowledge base, and S3 data source.

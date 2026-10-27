@@ -31,15 +31,43 @@ resource "aws_kms_key" "documents" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Sid    = "EnableAccountIAMPermissions"
-      Effect = "Allow"
-      Principal = {
-        AWS = "arn:aws:iam::359769212511:root"
+    Statement = [
+      {
+        Sid    = "EnableAccountIAMPermissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::359769212511:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowS3VectorsBackgroundIndexing"
+        Effect = "Allow"
+        Principal = {
+          Service = "indexing.s3vectors.amazonaws.com"
+        }
+        Action   = "kms:Decrypt"
+        Resource = "*"
+        Condition = {
+          ArnLike = {
+            "aws:SourceArn" = [
+              "arn:aws:s3vectors:us-east-1:359769212511:bucket/secure-rag-vectors-359769212511",
+              "arn:aws:s3vectors:us-east-1:359769212511:bucket/secure-rag-vectors-359769212511/*"
+            ]
+          }
+          StringEquals = {
+            "aws:SourceAccount" = "359769212511"
+          }
+          "ForAnyValue:StringEquals" = {
+            "kms:EncryptionContextKeys" = [
+              "aws:s3vectors:arn",
+              "aws:s3vectors:resource-id"
+            ]
+          }
+        }
       }
-      Action   = "kms:*"
-      Resource = "*"
-    }]
+    ]
   })
 }
 
