@@ -8,6 +8,8 @@ from botocore.config import Config
 REGION = "us-east-1"
 KNOWLEDGE_BASE_ID = "CIDAASDHVV"
 MODEL_ID = "amazon.nova-lite-v1:0"
+GUARDRAIL_ID = "slyy6r0dgc41"
+GUARDRAIL_VERSION = "1"
 
 VALID_AUDIENCES = {
     "all_employees",
@@ -39,13 +41,14 @@ CLIENT_CONFIG = Config(
 
 def insufficient_evidence():
     return {
+        "status": "insufficient_evidence",
         "answer": "The accessible sources do not provide enough information.",
         "sources": [],
     }
 
 
 def answer_question(question, audiences):
-    # Audiences must come from verified identity, not user input.
+    # Audiences come from verified identity, never the request body.
     if (
         not isinstance(audiences, list)
         or not audiences
@@ -92,7 +95,7 @@ def answer_question(question, audiences):
     ):
         metadata = item.get("metadata", {})
 
-        # Stop before model invocation if retrieval violates access rules.
+        # Reject unauthorized evidence before model invocation.
         if metadata.get("audience") not in audiences:
             raise RuntimeError("Retrieved document failed access check.")
 
@@ -127,21 +130,39 @@ def answer_question(question, audiences):
         config=CLIENT_CONFIG,
     )
 
+    # Both the question and retrieved evidence are assessed.
+    guarded_text = json.dumps({
+        "question": question,
+        "evidence": evidence,
+    })
+
     result = model_client.converse(
         modelId=MODEL_ID,
         system=[{"text": SYSTEM_PROMPT}],
         messages=[{
             "role": "user",
             "content": [{
-                "text": json.dumps({
-                    "question": question,
-                    "evidence": evidence,
-                })
+                "guardContent": {
+                    "text": {"text": guarded_text}
+                }
             }],
         }],
+        guardrailConfig={
+            "guardrailIdentifier": GUARDRAIL_ID,
+            "guardrailVersion": GUARDRAIL_VERSION,
+            "trace": "disabled",
+        },
         inferenceConfig={"maxTokens": 400, "temperature": 0},
     )
 
+    if result.get("stopReason") == "guardrail_intervened":
+        return {
+            "status": "blocked",
+            "answer": "This request was blocked by the security filter.",
+            "sources": [],
+        }
+
+    # Unexpected responses fail closed; no unguarded retry.
     if result.get("stopReason") != "end_turn":
         raise RuntimeError("Model response did not finish normally.")
 
@@ -162,6 +183,7 @@ def answer_question(question, audiences):
         raise RuntimeError("Model returned invalid source references.")
 
     return {
+        "status": "answered",
         "answer": answer,
         "sources": [sources[number] for number in sorted(cited)],
     }

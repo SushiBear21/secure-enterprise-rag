@@ -57,3 +57,17 @@ resource "aws_iam_role_policy" "api_bedrock" {
     ]
   })
 }
+resource "aws_iam_role_policy" "api_guardrail" {
+  name = "apply-rag-guardrail"
+  role = aws_iam_role.api.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid      = "ApplyRagGuardrail"
+      Effect   = "Allow"
+      Action   = "bedrock:ApplyGuardrail"
+      Resource = aws_bedrock_guardrail.assistant.guardrail_arn
+    }]
+  })
+}
