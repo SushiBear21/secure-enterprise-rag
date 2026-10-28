@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-10-28T02:21:21.528680+00:00",
+  "suite": "live_soc",
+  "passed": 3,
+  "total": 3,
+  "results": [
+    {
+      "case": "soc_closure",
+      "passed": true,
+      "duration_ms": 1769.34
+    },
+    {
+      "case": "soc_general_policy",
+      "passed": true,
+      "duration_ms": 1721.07
+    },
+    {
+      "case": "soc_acquisition_exclusion",
+      "passed": true,
+      "duration_ms": 1821.05
+    }
+  ]
+}
