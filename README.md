@@ -168,7 +168,8 @@ See:
 - [Evaluation guide](docs/evaluation.md)
 - [Security test results](docs/security-testing.md)
 - [Foundation notes](docs/foundation.md)
-
+- [Demo walkthrough](docs/demo.md)
+- [Design decisions and tradeoffs](docs/design-decisions.md)
 The SNS email subscription and Cognito test users were configured outside
 Terraform and require separate setup.
 
