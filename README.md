@@ -1,4 +1,4 @@
-﻿# Secure Enterprise RAG Assistant
+# Secure Enterprise RAG Assistant
 
 An AWS portfolio application that answers questions from synthetic enterprise
 documents, derives document access from authenticated user groups, and returns
@@ -6,6 +6,27 @@ answers with source citations.
 
 Built with Python, Terraform, Amazon Bedrock, S3 Vectors, Cognito,
 API Gateway, Lambda, and CloudWatch.
+
+## Problem and personal contribution
+
+How can employees query shared documents while keeping restricted evidence out
+of the model context?
+
+In this personal project, I built the Python application and Terraform
+infrastructure, mapped authenticated groups to document audiences, and added
+retrieval filters plus pre-model metadata checks. I also implemented guarded
+inference, negative tests, and employee/SOC evaluations using synthetic data.
+Authorization is enforced in application code; the guardrail is an additional
+prompt-attack control.
+
+## Evidence to review first
+
+| Review question | Implementation or recorded evidence |
+| --- | --- |
+| Where is access decided? | [Group mapping](app/authorization.py), [retrieval and inference boundary](app/rag_service.py) |
+| What if retrieval returns unauthorized evidence? | [Boundary tests](tests/security/test_retrieval_boundary.py), [security checks](docs/security-testing.md) |
+| What was evaluated live? | [Employee report](tests/evaluation/live-employee-results.json), [SOC report](tests/evaluation/live-soc-results.json) |
+| What do the tests miss? | [Evaluation scope and limitations](docs/evaluation.md) |
 
 ## What it demonstrates
 
@@ -96,7 +117,7 @@ Responses distinguish:
 - insufficient_evidence
 - blocked
 
-## Verified results
+## Recorded results
 
 | Check | Observed result |
 |---|---|
@@ -109,6 +130,8 @@ Responses distinguish:
 | Alarm-to-email notification path | Verified by simulated alarm-state change |
 | Terraform state migration | 43 application resources preserved; no-change plan |
 
+The author recorded 17 passing local tests, 6/6 employee cases, and 3/3 SOC
+cases. These results were not independently rerun for this documentation review.
 Live evaluation reports include timestamps and per-case results.
 These results cover specific cases and do not establish complete security
 or answer accuracy.
@@ -190,6 +213,12 @@ Terraform and require separate setup.
 - Live acquisition-user and multi-group evaluations remain future work.
 - Real failure-trigger alarm testing and state-recovery exercises remain
   future work.
+
+## Next validation
+
+Extend live coverage to acquisition users, multiple groups, and invalid tokens;
+add broader adversarial and semantic answer checks. Exercise real failure-driven
+alarms and state recovery before making stronger operational claims.
 
 ## Cost and cleanup
 
