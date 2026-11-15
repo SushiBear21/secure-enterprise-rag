@@ -1,5 +1,7 @@
 # Secure Enterprise RAG Assistant
 
+[Portfolio overview](https://github.com/SushiBear21/agentic-security-workflow/blob/main/PORTFOLIO.md) · [Latest CI runs](https://github.com/SushiBear21/secure-enterprise-rag/actions)
+
 An AWS portfolio application that answers questions from synthetic enterprise
 documents, derives document access from authenticated user groups, and returns
 answers with source citations.
