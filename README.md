@@ -229,3 +229,7 @@ Review costs, retain protected state backups, and follow the operations
 guide before removing resources. Versioned documents and vector data can
 require additional cleanup. Preserve remote-state storage throughout
 application teardown.
+
+## November 2026 portfolio extensions
+
+See [repeatable evaluation](docs/portfolio-extensions.md) for commands, measured scope and limitations.

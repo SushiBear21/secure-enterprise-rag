@@ -1,15 +1,31 @@
 import json
+import os
 import re
 
 import boto3
 from botocore.config import Config
 
 
-REGION = "us-east-1"
-KNOWLEDGE_BASE_ID = "CIDAASDHVV"
-MODEL_ID = "amazon.nova-lite-v1:0"
-GUARDRAIL_ID = "slyy6r0dgc41"
-GUARDRAIL_VERSION = "1"
+def load_settings(environ=None):
+    env = os.environ if environ is None else environ
+    defaults = {
+        "AWS_REGION": "us-east-1", "RAG_KNOWLEDGE_BASE_ID": "CIDAASDHVV",
+        "RAG_MODEL_ID": "amazon.nova-lite-v1:0",
+        "RAG_GUARDRAIL_ID": "slyy6r0dgc41", "RAG_GUARDRAIL_VERSION": "1",
+    }
+    settings = {key: env.get(key, default) for key, default in defaults.items()}
+    if any(not isinstance(v, str) or not v.strip() or v != v.strip() for v in settings.values()):
+        raise ValueError("RAG settings must be nonempty strings without surrounding whitespace.")
+    if not settings["RAG_GUARDRAIL_VERSION"].isdigit() or int(settings["RAG_GUARDRAIL_VERSION"]) < 1:
+        raise ValueError("Use a published positive guardrail version.")
+    return settings
+
+SETTINGS = load_settings()
+REGION = SETTINGS["AWS_REGION"]
+KNOWLEDGE_BASE_ID = SETTINGS["RAG_KNOWLEDGE_BASE_ID"]
+MODEL_ID = SETTINGS["RAG_MODEL_ID"]
+GUARDRAIL_ID = SETTINGS["RAG_GUARDRAIL_ID"]
+GUARDRAIL_VERSION = SETTINGS["RAG_GUARDRAIL_VERSION"]
 
 VALID_AUDIENCES = {
     "all_employees",

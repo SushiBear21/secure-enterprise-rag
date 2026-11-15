@@ -35,3 +35,12 @@ jobs:
 
       - name: Run security unit tests
         run: python -m unittest discover -s tests/security -p "test_*.py" -v
+      - name: Run mocked AWS security evaluation
+        run: python app/evaluate_offline.py > offline-evaluation.json
+
+      - name: Retain evaluation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-offline-evaluation
+          path: offline-evaluation.json
+          retention-days: 14
