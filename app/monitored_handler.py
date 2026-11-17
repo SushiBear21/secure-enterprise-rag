@@ -1,8 +1,11 @@
 import json
+import logging
 import time
 
 from api_handler import lambda_handler as handle_request
 from api_handler import response
+
+logging.getLogger("rag_service").setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):

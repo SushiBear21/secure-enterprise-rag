@@ -166,3 +166,16 @@ Before teardown:
 
 Bootstrap is separate and its bucket has prevent_destroy enabled.
 Do not remove state storage as part of routine application cleanup.
+## Inference telemetry
+
+The monitored Lambda handler enables structured `rag_model_call` events. Each
+event records the model ID, prompt version and SHA-256, guardrail version,
+provider stop outcome, latency and available token usage. Prompts, retrieved text
+and answers are excluded. The existing request log records the application
+outcome after response validation.
+
+To emit an uncached cost estimate, set both `RAG_INPUT_USD_PER_MILLION` and
+`RAG_OUTPUT_USD_PER_MILLION` on the function to the rates applicable to its
+configured model and region. The estimate is null when rates or usage are
+missing or cached usage is reported. Offline tests exercise the logging contract
+with mocked Bedrock responses.
