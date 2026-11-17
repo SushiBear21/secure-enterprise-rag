@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -153,6 +154,29 @@ class RagFailureTests(unittest.TestCase):
             "invalid source references",
         ):
             self.ask()
+
+    def test_tool_output_is_rejected_even_alongside_valid_citation(self):
+        self.set_model_answer("Supervisor approval is required [1].")
+        self.model.converse.return_value["output"]["message"]["content"].append(
+            {"toolUse": {"name": "synthetic_tool"}}
+        )
+        with self.assertRaisesRegex(RuntimeError, "non-text"):
+            self.ask()
+
+    def test_inference_telemetry_has_versions_usage_and_no_content(self):
+        answer = "Supervisor approval is required [1]."
+        self.set_model_answer(answer)
+        self.model.converse.return_value["usage"] = {"inputTokens": 120, "outputTokens": 40}
+        with patch.dict("os.environ", {"RAG_INPUT_USD_PER_MILLION": "1", "RAG_OUTPUT_USD_PER_MILLION": "2"}):
+            with self.assertLogs(rag_service.LOGGER, level="INFO") as logs:
+                self.ask()
+        record = json.loads(logs.records[0].getMessage())
+        self.assertEqual(record["model_id"], rag_service.MODEL_ID)
+        self.assertEqual(record["prompt_sha256"], rag_service.PROMPT_SHA256)
+        self.assertEqual(record["input_tokens"], 120)
+        self.assertAlmostEqual(record["estimated_model_cost_usd"], 0.0002)
+        self.assertNotIn(answer, logs.records[0].getMessage())
+        self.assertNotIn("Who approves travel?", logs.records[0].getMessage())
 
 
 if __name__ == "__main__":

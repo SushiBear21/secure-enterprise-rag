@@ -1,6 +1,10 @@
+import hashlib
 import json
+import logging
+import math
 import os
 import re
+import time
 
 import boto3
 from botocore.config import Config
@@ -47,6 +51,26 @@ Do not reproduce evidence JSON or add a bibliography.
 If the evidence cannot answer the question, respond with exactly:
 INSUFFICIENT_EVIDENCE
 """
+PROMPT_VERSION = "rag-evidence-v1"
+PROMPT_SHA256 = hashlib.sha256(SYSTEM_PROMPT.encode()).hexdigest()
+LOGGER = logging.getLogger(__name__)
+
+
+def estimated_cost(usage):
+    """Use operator-supplied uncached rates in USD per million tokens."""
+    if usage.get("cacheReadInputTokens") or usage.get("cacheWriteInputTokens"):
+        return None
+    counts = [usage.get("inputTokens"), usage.get("outputTokens")]
+    if any(type(count) is not int or count < 0 for count in counts):
+        return None
+    try:
+        rates = [float(os.environ[key]) for key in ("RAG_INPUT_USD_PER_MILLION", "RAG_OUTPUT_USD_PER_MILLION")]
+    except (KeyError, ValueError):
+        return None
+    if any(not math.isfinite(rate) or rate < 0 for rate in rates):
+        return None
+    cost = sum(count * (rate / 1_000_000) for count, rate in zip(counts, rates))
+    return cost if math.isfinite(cost) else None
 
 CLIENT_CONFIG = Config(
     connect_timeout=3,
@@ -152,24 +176,37 @@ def answer_question(question, audiences):
         "evidence": evidence,
     })
 
-    result = model_client.converse(
-        modelId=MODEL_ID,
-        system=[{"text": SYSTEM_PROMPT}],
-        messages=[{
-            "role": "user",
-            "content": [{
-                "guardContent": {
-                    "text": {"text": guarded_text}
-                }
+    started = time.perf_counter()
+    outcome = "provider_error"
+    usage = {}
+    try:
+        result = model_client.converse(
+            modelId=MODEL_ID,
+            system=[{"text": SYSTEM_PROMPT}],
+            messages=[{
+                "role": "user",
+                "content": [{"guardContent": {"text": {"text": guarded_text}}}],
             }],
-        }],
-        guardrailConfig={
-            "guardrailIdentifier": GUARDRAIL_ID,
-            "guardrailVersion": GUARDRAIL_VERSION,
-            "trace": "disabled",
-        },
-        inferenceConfig={"maxTokens": 400, "temperature": 0},
-    )
+            guardrailConfig={
+                "guardrailIdentifier": GUARDRAIL_ID,
+                "guardrailVersion": GUARDRAIL_VERSION,
+                "trace": "disabled",
+            },
+            inferenceConfig={"maxTokens": 400, "temperature": 0},
+        )
+        stop = result.get("stopReason")
+        outcome = stop if stop in ("end_turn", "guardrail_intervened") else "unexpected_stop"
+        usage = result.get("usage") or {}
+    finally:
+        LOGGER.info(json.dumps({
+            "event": "rag_model_call", "model_id": MODEL_ID,
+            "prompt_version": PROMPT_VERSION, "prompt_sha256": PROMPT_SHA256,
+            "guardrail_version": GUARDRAIL_VERSION, "outcome": outcome,
+            "latency_ms": round((time.perf_counter() - started) * 1000, 3),
+            "input_tokens": usage.get("inputTokens"),
+            "output_tokens": usage.get("outputTokens"),
+            "estimated_model_cost_usd": estimated_cost(usage),
+        }))
 
     if result.get("stopReason") == "guardrail_intervened":
         return {
@@ -182,10 +219,10 @@ def answer_question(question, audiences):
     if result.get("stopReason") != "end_turn":
         raise RuntimeError("Model response did not finish normally.")
 
-    answer = "".join(
-        block.get("text", "")
-        for block in result["output"]["message"]["content"]
-    ).strip()
+    blocks = result["output"]["message"]["content"]
+    if not blocks or any(set(block) != {"text"} or not isinstance(block["text"], str) for block in blocks):
+        raise RuntimeError("Model returned non-text content.")
+    answer = "".join(block["text"] for block in blocks).strip()
 
     if re.fullmatch(
         r"INSUFFICIENT_EVIDENCE(?:\s*\[\d+\])*\s*[.!]?",
