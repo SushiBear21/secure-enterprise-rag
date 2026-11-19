@@ -45,6 +45,15 @@ prompt-attack control.
 All source documents describe a fictional organization, Harbor Research.
 They contain synthetic training data.
 
+## Defensive AI incident response exercise
+
+The [analyst runbook and post-incident report](docs/ai-incident-response.md)
+replay a suspected indirect prompt-injection alert using a harmless document and
+mocked Bedrock responses. The exercise links evidence to a single case and
+demonstrates approval-gated retrieval pause, recovery validation, and resumption.
+CI also checks the handoffs with the SOAR workbench and Control Tower and
+retains the timestamped case JSON.
+
 ## Architecture
 
 ```mermaid

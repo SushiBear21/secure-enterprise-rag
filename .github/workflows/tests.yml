@@ -44,3 +44,32 @@ jobs:
           name: rag-offline-evaluation
           path: offline-evaluation.json
           retention-days: 14
+
+      - name: Check out SOAR workbench source
+        uses: actions/checkout@v6
+        with:
+          repository: SushiBear21/aws-security-response-lab
+          ref: 7018def69bf97feda639e76cfc880e4f92f8b0f0
+          path: .companions/response
+          persist-credentials: false
+
+      - name: Check out Control Tower source
+        uses: actions/checkout@v6
+        with:
+          repository: SushiBear21/agentic-security-workflow
+          ref: a7f5c38ad62f14eddb298ca546abd76ddd6a82f8
+          path: .companions/tower
+          persist-credentials: false
+
+      - name: Run defensive AI incident response exercise
+        run: >-
+          python -m app.incident_scenario --output ai-incident-case.json
+          --response-lab .companions/response --control-tower .companions/tower
+
+      - name: Retain AI incident case evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-ai-incident-case
+          path: ai-incident-case.json
+          if-no-files-found: error
+          retention-days: 14
