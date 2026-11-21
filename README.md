@@ -9,6 +9,15 @@ answers with source citations.
 Built with Python, Terraform, Amazon Bedrock, S3 Vectors, Cognito,
 API Gateway, Lambda, and CloudWatch.
 
+## Objective, success criteria, and evidence
+
+**Objective.** Answer employee and SOC questions from authorized documents, with citations and an auditable access boundary before model inference.
+
+| Success criterion | Recorded result and evidence |
+| --- | --- |
+| Authorized users receive the expected answers and sources, and restricted or unsupported requests return the expected safe response. | Recorded AWS sandbox evaluations passed 6/6 employee cases and 3/3 SOC cases. [Employee results](tests/evaluation/live-employee-results.json) · [SOC results](tests/evaluation/live-soc-results.json) |
+| Retrieved content outside the caller's audience is rejected before inference. | [Retrieval boundary tests](tests/security/test_retrieval_boundary.py) · [Security checks and scope](docs/security-testing.md) |
+
 ## Problem and personal contribution
 
 How can employees query shared documents while keeping restricted evidence out
