@@ -9,6 +9,8 @@ import time
 import boto3
 from botocore.config import Config
 
+from evidence_provenance import load_manifest, verify_retrieved
+
 
 def load_settings(environ=None):
     env = os.environ if environ is None else environ
@@ -99,6 +101,11 @@ def answer_question(question, audiences):
     ):
         raise ValueError("Invalid authorized audiences.")
 
+    # Opt-in strict mode: a host-owned ingestion manifest pins source identity,
+    # audience, URI and exact retrieved text. Metadata alone is not authority.
+    manifest_path = os.environ.get("RAG_PROVENANCE_MANIFEST_PATH")
+    trusted_documents = load_manifest(manifest_path) if manifest_path else None
+
     conditions = [
         {"equals": {"key": "audience", "value": audience}}
         for audience in sorted(set(audiences))
@@ -150,6 +157,8 @@ def answer_question(question, audiences):
         if not text.strip() or not document_id or not uri:
             raise RuntimeError("Retrieved evidence is incomplete.")
 
+        receipt = verify_retrieved(item, trusted_documents) if trusted_documents is not None else None
+
         evidence.append({
             "source_number": number,
             "text": "\n".join(text.splitlines()),
@@ -159,6 +168,7 @@ def answer_question(question, audiences):
             "source_number": number,
             "document_id": document_id,
             "uri": uri,
+            "provenance_verified": receipt is not None,
         }
 
     if not evidence:
