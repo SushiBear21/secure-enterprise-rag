@@ -244,3 +244,7 @@ application teardown.
 ## November 2026 portfolio extensions
 
 See [repeatable evaluation](docs/portfolio-extensions.md) for commands, measured scope and limitations.
+
+## Trusted-source provenance extension (optional)
+
+[Trusted RAG source manifest](docs/trusted-provenance.md) adds an opt-in, host-owned SHA-256 retrieval-chunk verification gate before model inference. Without `RAG_PROVENANCE_MANIFEST_PATH`, digest verification remains **inactive** and the existing audience checks continue. This is a source-integrity check, not proof that source content is trusted policy, and it requires an ingestion/chunk-versioning lifecycle before enabling in a live knowledge base.
