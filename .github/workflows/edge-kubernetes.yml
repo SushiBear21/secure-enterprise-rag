@@ -37,12 +37,10 @@ jobs:
       - name: Image vulnerability report (not a release approval)
         if: always()
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: edge-rag:lab
-          format: json
-          output: edge-evidence/trivy.json
-          exit-code: '0'
+        run: |
+          docker pull aquasec/trivy:0.58.2
+          docker image inspect aquasec/trivy:0.58.2 --format '{{index .RepoDigests 0}}' > edge-evidence/trivy-image-digest.txt
+          docker run --rm -v "$RUNNER_TEMP/edge29-bundle:/bundle:ro" aquasec/trivy:0.58.2 image --input /bundle/image.tar --format json > edge-evidence/trivy.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
