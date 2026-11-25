@@ -1,0 +1,49 @@
+name: Edge AI Kubernetes rehearsal
+on:
+  pull_request:
+    paths:
+      - 'edge_lab/**'
+      - '.github/workflows/edge-kubernetes.yml'
+permissions:
+  contents: read
+jobs:
+  rehearsal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+      - name: Install kind
+        run: |
+          go install sigs.k8s.io/kind@v0.27.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Run disposable Kubernetes rehearsal
+        run: bash edge_lab/rehearse.sh
+      - name: Generate image SBOM (report only)
+        if: always()
+        continue-on-error: true
+        uses: anchore/sbom-action@v0
+        with:
+          image: edge-rag:lab
+          format: spdx-json
+          output-file: edge-evidence/image-sbom.spdx.json
+          upload-artifact: false
+      - name: Image vulnerability report (not a release approval)
+        if: always()
+        continue-on-error: true
+        run: |
+          docker pull aquasec/trivy:0.58.2
+          docker image inspect aquasec/trivy:0.58.2 --format '{{index .RepoDigests 0}}' > edge-evidence/trivy-image-digest.txt
+          docker run --rm -v "$RUNNER_TEMP/edge29-bundle:/bundle:ro" aquasec/trivy:0.58.2 image --input /bundle/image.tar --format json > edge-evidence/trivy.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: edge-kubernetes-evidence
+          path: edge-evidence/
+          retention-days: 14
