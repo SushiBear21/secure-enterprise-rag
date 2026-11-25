@@ -7,6 +7,7 @@ BUNDLE="$RUNNER_TEMP/edge29-bundle"
 mkdir -p "$OUT" "$BUNDLE"
 K=(kubectl --context kind-edge29 -n edge-lab)
 PF=""
+if kind get clusters | grep -Fxq edge29; then echo "Refusing to touch an existing edge29 cluster"; exit 1; fi
 stop_pf() { if [[ -n "$PF" ]]; then kill "$PF" 2>/dev/null || true; wait "$PF" 2>/dev/null || true; PF=""; fi; }
 cleanup() {
   stop_pf
